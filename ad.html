@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KNR Sportverse Admin Panel</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  :root {
+    --primary-blue: #2a81f3;
+    --primary-dark: #1c222e;
+    --bg-light: #f4f7fa;
+    --bg-dark: #0f141a;
+    --border-color: #e0e0e0;
+    --success: #4caf50;
+    --error: #d32f2f;
+    --warning: #ff9800;
+  }
+
+  body {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg-light);
+    color: #333;
+  }
+
+  body.dark-mode {
+    background: var(--bg-dark);
+    color: #e4e6eb;
+  }
+
+  .auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: var(--primary-dark);
+  }
+
+  .auth-box {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    width: 100%;
+    max-width: 400px;
+  }
+
+  body.dark-mode .auth-box {
+    background: #1e2532;
+    color: #e4e6eb;
+  }
+
+  .auth-box h1 {
+    color: var(--primary-blue);
+    margin-bottom: 10px;
+    text-align: center;
+    font-size: 1.8rem;
+  }
+
+  .auth-box p {
+    text-align: center;
+    margin-bottom: 30px;
+    opacity: 0.7;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  .form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+  }
+
+  body.dark-mode .form-group input {
+    background: #141922;
+    color: #e4e6eb;
+    border-color: #333b4d;
+  }
+
+  .form-group input:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(42, 129, 243, 0.1);
+  }
+
+  .btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 14px;
+    width: 100%;
+  }
+
+  .btn-primary {
+    background: var(--primary-blue);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: #1a6cd1;
+    transform: translateY(-2px);
+  }
+
+  .btn-success {
+    background: var(--success);
+    color: white;
+  }
+
+  .btn-success:hover {
+    background: #45a049;
+  }
+
+  .btn-danger {
+    background: var(--error);
+    color: white;
+  }
+
+  .btn-danger:hover {
+    background: #ba000d;
+  }
+
+  .btn-warning {
+    background: var(--warning);
+    color: white;
+  }
+
+  .btn-warning:hover {
+    background: #e68900;
+  }
+
+  .btn-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .alert {
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideIn 0.3s ease;
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateY(-10px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .alert-success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+  }
+
+  .alert-error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+
+  body.dark-mode .alert-success {
+    background: #1e4620;
+    border-color: #2d6a2d;
+    color: #4caf50;
+  }
+
+  body.dark-mode .alert-error {
+    background: #5d1f1f;
+    border-color: #8b2d2d;
+    color: #ff6b6b;
+  }
+
+  .header {
+    background: var(--primary-dark);
+    color: white;
+    padding: 20px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  }
+
+  .header h1 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.5rem;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
+  }
+
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+  }
+
+  @media (max-width: 1024px) {
+    .main-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .card {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border: 1px solid var(--border-color);
+  }
+
+  body.dark-mode .card {
+    background: #1e2532;
+    border-color: #333b4d;
+  }
+
+  .card h2 {
+    color: var(--primary-blue);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.3rem;
+  }
+
+  .stream-fields {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #e0e0e0;
+  }
+
+  body.dark-mode .stream-fields {
+    background: #0f141a;
+    border-color: #333b4d;
+  }
+
+  .stream-field {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 10px;
+    margin-bottom: 12px;
+    align-items: end;
+  }
+
+  .stream-field input {
+    width: 100%;
+    padding: 10px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 13px;
+  }
+
+  body.dark-mode .stream-field input {
+    background: #141922;
+    color: #e4e6eb;
+    border-color: #333b4d;
+  }
+
+  .remove-stream-btn {
+    padding: 8px 12px;
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s;
+  }
+
+  .remove-stream-btn:hover {
+    background: #ee5a52;
+  }
+
+  .events-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 600px;
+    overflow-y: auto;
+  }
+
+  .event-item {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid var(--primary-blue);
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  body.dark-mode .event-item {
+    background: #0f141a;
+  }
+
+  .event-item:hover {
+    box-shadow: 0 4px 12px rgba(42, 129, 243, 0.2);
+  }
+
+  .event-item-info h4 {
+    color: var(--primary-blue);
+    margin-bottom: 4px;
+  }
+
+  .event-item-info p {
+    font-size: 12px;
+    opacity: 0.7;
+    margin: 2px 0;
+  }
+
+  .event-item-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+  }
+
+  .empty-state i {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    opacity: 0.5;
+  }
+
+  .loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+  }
+
+  .spinner {
+    border: 4px solid rgba(42, 129, 243, 0.2);
+    border-top: 4px solid var(--primary-blue);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+  }
+
+  .toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 24px;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+  }
+
+  input:checked + .slider {
+    background-color: var(--primary-blue);
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(26px);
+  }
+
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .checkbox-group input[type="checkbox"] {
+    width: auto;
+  }
+
+  @media (max-width: 768px) {
+    .stream-field {
+      grid-template-columns: 1fr;
+    }
+
+    .event-item {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .event-item-actions {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .event-item-actions button {
+      flex: 1;
+    }
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--primary-blue);
+    border-radius: 4px;
+  }
+
+  body.dark-mode ::-webkit-scrollbar-track {
+    background: #1e2532;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+</style>
+</head>
+<body>
+
+<div id="authSection" class="auth-container">
+  <div class="auth-box">
+    <h1><i class="fa-solid fa-circle-play"></i> KNR Admin</h1>
+    <p>Sign in to manage events</p>
+    <div id="authAlert"></div>
+    <div class="form-group">
+      <label for="authEmail">Email</label>
+      <input type="email" id="authEmail" placeholder="admin@example.com">
+    </div>
+    <div class="form-group">
+      <label for="authPassword">Password</label>
+      <input type="password" id="authPassword" placeholder="Password">
+    </div>
+    <button class="btn btn-primary" onclick="handleLogin()">
+      <i class="fa-solid fa-sign-in-alt"></i> Sign In
+    </button>
+    <p style="text-align: center; margin-top: 20px; font-size: 13px; opacity: 0.6;">
+      Don't have account? <a href="#" onclick="toggleAuthMode()" style="color: var(--primary-blue); text-decoration: none; font-weight: 600;">Sign Up</a>
+    </p>
+  </div>
+</div>
+
+<div id="adminSection" class="hidden">
+  <div class="header">
+    <h1>
+      <i class="fa-solid fa-gears"></i>
+      KNR Admin Panel
+    </h1>
+    <div class="header-actions">
+      <button class="btn btn-primary btn-sm" onclick="toggleDarkMode()">
+        <i class="fa-solid fa-moon"></i> <span id="themeText">Dark</span>
+      </button>
+      <button class="btn btn-danger btn-sm" onclick="handleLogout()">
+        <i class="fa-solid fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="main-grid">
+
+      <div class="card">
+        <h2><i class="fa-solid fa-plus-circle"></i> Create/Edit Event</h2>
+        
+        <div id="alertContainer"></div>
+
+        <form id="eventForm" onsubmit="handleSaveEvent(event)">
+          
+          <div class="form-group">
+            <label for="eventId">Event ID <span style="color: red;">*</span></label>
+            <input type="text" id="eventId" placeholder="e.g., ipl-final" required>
+            <small style="opacity: 0.7;">Used in URL: ?id=event-id</small>
+          </div>
+
+          <div class="form-group">
+            <label for="eventTitle">Event Title <span style="color: red;">*</span></label>
+            <input type="text" id="eventTitle" placeholder="Event title" required>
+          </div>
+
+          <div class="form-group">
+            <label for="eventDescription">Event Description <span style="color: red;">*</span></label>
+            <textarea id="eventDescription" placeholder="Event details..." style="width: 100%; padding: 12px; border: 1.5px solid var(--border-color); border-radius: 6px; min-height: 100px; font-family: inherit; font-size: 14px; resize: vertical;" required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Streaming Options</label>
+            <div class="checkbox-group">
+              <label class="toggle-switch">
+                <input type="checkbox" id="isLive" checked>
+                <span class="slider"></span>
+              </label>
+              <label for="isLive">Is Live</label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Streams <span style="color: red;">*</span></label>
+            <div class="stream-fields" id="streamFields">
+            </div>
+            <button type="button" class="btn btn-primary" onclick="addStreamField()" style="margin-bottom: 20px;">
+              <i class="fa-solid fa-plus"></i> Add Stream
+            </button>
+          </div>
+
+          <div class="form-group">
+            <label for="defaultStream">Default Stream</label>
+            <select id="defaultStream" style="width: 100%; padding: 12px; border: 1.5px solid var(--border-color); border-radius: 6px; font-size: 14px; background: white; color: #333;">
+            </select>
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 25px;">
+            <button type="submit" class="btn btn-success" style="flex: 1;">
+              <i class="fa-solid fa-save"></i> Save Event
+            </button>
+            <button type="button" class="btn btn-danger" onclick="deleteEvent()" id="deleteBtn" style="flex: 1; display: none;">
+              <i class="fa-solid fa-trash"></i> Delete
+            </button>
+            <button type="button" class="btn btn-warning" onclick="resetForm()" style="flex: 1;">
+              <i class="fa-solid fa-redo"></i> Clear
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2><i class="fa-solid fa-list"></i> All Events</h2>
+        
+        <div id="eventsList" class="events-list">
+          <div class="loading">
+            <div class="spinner"></div>
+            <p>Loading events...</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  doc,
+  setDoc,
+  deleteDoc,
+  onSnapshot,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC6ZqZpIu6HlgjSapyPUL_Wz3aDk-omvJc",
+  authDomain: "knr-sportverse-52e4d.firebaseapp.com",
+  projectId: "knr-sportverse-52e4d",
+  storageBucket: "knr-sportverse-52e4d.firebasestorage.app",
+  messagingSenderId: "116274509659",
+  appId: "1:116274509659:web:1764a978344019f7798c7e",
+  measurementId: "G-BQKJJPLZ5X"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+let allEvents = [];
+let currentEditingId = null;
+let streamCount = 1;
+let unsubscribe = null;
+let isSignUp = false;
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    document.getElementById('authSection').classList.add('hidden');
+    document.getElementById('adminSection').classList.remove('hidden');
+    addStreamField();
+    loadEvents();
+    restoreTheme();
+  } else {
+    document.getElementById('authSection').classList.remove('hidden');
+    document.getElementById('adminSection').classList.add('hidden');
+  }
+});
+
+window.toggleAuthMode = function() {
+  isSignUp = !isSignUp;
+  const authBox = document.querySelector('.auth-box');
+  const btn = authBox.querySelector('.btn');
+  const p = authBox.querySelector('p:last-of-type');
+  
+  if (isSignUp) {
+    authBox.querySelector('h1').textContent = '✎ Create Account';
+    btn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Sign Up';
+    p.innerHTML = 'Already have account? <a href="#" onclick="toggleAuthMode()" style="color: var(--primary-blue); text-decoration: none; font-weight: 600;">Sign In</a>';
+  } else {
+    authBox.querySelector('h1').innerHTML = '<i class="fa-solid fa-circle-play"></i> KNR Admin';
+    btn.innerHTML = '<i class="fa-solid fa-sign-in-alt"></i> Sign In';
+    p.innerHTML = 'Don\'t have account? <a href="#" onclick="toggleAuthMode()" style="color: var(--primary-blue); text-decoration: none; font-weight: 600;">Sign Up</a>';
+  }
+};
+
+window.handleLogin = async function() {
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value.trim();
+
+  if (!email || !password) {
+    showAuthAlert('Please fill all fields', 'error');
+    return;
+  }
+
+  try {
+    if (isSignUp) {
+      await createUserWithEmailAndPassword(auth, email, password);
+    } else {
+      await signInWithEmailAndPassword(auth, email, password);
+    }
+  } catch (error) {
+    showAuthAlert(error.message, 'error');
+  }
+};
+
+window.handleLogout = async function() {
+  try {
+    await signOut(auth);
+    document.getElementById('authEmail').value = '';
+    document.getElementById('authPassword').value = '';
+    if (unsubscribe) unsubscribe();
+  } catch (error) {
+    showAlert(error.message, 'error');
+  }
+};
+
+function showAuthAlert(message, type) {
+  const alertDiv = document.getElementById('authAlert');
+  alertDiv.innerHTML = `<div class="alert alert-${type}"><i class="fa-solid fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}"></i> ${message}</div>`;
+  setTimeout(() => alertDiv.innerHTML = '', 4000);
+}
+
+window.addStreamField = function() {
+  const streamFields = document.getElementById('streamFields');
+  const streamField = document.createElement('div');
+  streamField.className = 'stream-field';
+  streamField.innerHTML = `
+    <input type="text" class="stream-name" placeholder="Stream Name" value="STREAM ${streamCount}">
+    <input type="url" class="stream-url" placeholder="Stream URL" required>
+    <button type="button" class="remove-stream-btn" onclick="removeStreamField(this)">
+      <i class="fa-solid fa-trash"></i>
+    </button>
+  `;
+  streamFields.appendChild(streamField);
+  streamCount++;
+  updateDefaultStreamOptions();
+};
+
+window.removeStreamField = function(button) {
+  button.parentElement.remove();
+  updateDefaultStreamOptions();
+};
+
+function updateDefaultStreamOptions() {
+  const streamFields = document.querySelectorAll('.stream-field');
+  const defaultSelect = document.getElementById('defaultStream');
+  const currentValue = defaultSelect.value;
+  
+  defaultSelect.innerHTML = '';
+  
+  streamFields.forEach((field, index) => {
+    const streamName = field.querySelector('.stream-name').value || `Stream ${index + 1}`;
+    const option = document.createElement('option');
+    option.value = index;
+    option.textContent = streamName;
+    defaultSelect.appendChild(option);
+  });
+  
+  if (currentValue < streamFields.length) {
+    defaultSelect.value = currentValue;
+  }
+}
+
+window.handleSaveEvent = async function(event) {
+  event.preventDefault();
+
+  const eventId = document.getElementById('eventId').value.trim();
+  const eventTitle = document.getElementById('eventTitle').value.trim();
+  const eventDescription = document.getElementById('eventDescription').value.trim();
+  const isLive = document.getElementById('isLive').checked;
+  const defaultStream = parseInt(document.getElementById('defaultStream').value);
+
+  const streamFields = document.querySelectorAll('.stream-field');
+  const streams = [];
+
+  for (let field of streamFields) {
+    const name = field.querySelector('.stream-name').value.trim();
+    const url = field.querySelector('.stream-url').value.trim();
+
+    if (!name || !url) {
+      showAlert('All stream fields must be filled', 'error');
+      return;
+    }
+
+    streams.push({ name, url });
+  }
+
+  if (streams.length === 0) {
+    showAlert('At least one stream is required', 'error');
+    return;
+  }
+
+  if (!eventId || !eventTitle || !eventDescription) {
+    showAlert('Event ID, Title, and Description are required', 'error');
+    return;
+  }
+
+  try {
+    const eventData = {
+      eventTitle,
+      eventDescription,
+      isLive,
+      defaultStream,
+      streams,
+      updatedAt: serverTimestamp()
+    };
+
+    if (!currentEditingId) {
+      eventData.createdAt = serverTimestamp();
+    }
+
+    await setDoc(doc(db, 'LivePage', eventId), eventData, { merge: true });
+    showAlert(`Event "${eventTitle}" saved successfully!`, 'success');
+    resetForm();
+  } catch (error) {
+    showAlert('Error: ' + error.message, 'error');
+  }
+};
+
+function loadEvents() {
+  const eventsList = document.getElementById('eventsList');
+  
+  try {
+    unsubscribe = onSnapshot(collection(db, 'LivePage'), (snapshot) => {
+      allEvents = [];
+      
+      snapshot.forEach((docSnap) => {
+        allEvents.push({
+          id: docSnap.id,
+          ...docSnap.data()
+        });
+      });
+
+      if (allEvents.length === 0) {
+        eventsList.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-solid fa-inbox"></i>
+            <p>No events created yet</p>
+          </div>
+        `;
+        return;
+      }
+
+      renderEventsList();
+    });
+  } catch (error) {
+    showAlert('Error loading events: ' + error.message, 'error');
+  }
+}
+
+function renderEventsList() {
+  const eventsList = document.getElementById('eventsList');
+  eventsList.innerHTML = '';
+
+  allEvents.sort((a, b) => {
+    const aTime = a.createdAt?.seconds || 0;
+    const bTime = b.createdAt?.seconds || 0;
+    return bTime - aTime;
+  });
+
+  allEvents.forEach((event) => {
+    const eventItem = document.createElement('div');
+    eventItem.className = 'event-item';
+    
+    const statusClass = event.isLive ? 'color: #4caf50;' : 'color: #999;';
+    const statusText = event.isLive ? 'LIVE' : 'OFFLINE';
+
+    eventItem.innerHTML = `
+      <div class="event-item-info">
+        <h4>${event.eventTitle}</h4>
+        <p><i class="fa-solid fa-id-badge"></i> ${event.id}</p>
+        <p><i class="fa-solid fa-video"></i> ${event.streams?.length || 0} streams</p>
+        <p style="${statusClass}"><i class="fa-solid fa-circle" style="font-size: 6px; margin-right: 4px;"></i> ${statusText}</p>
+      </div>
+      <div class="event-item-actions">
+        <button class="btn btn-sm btn-primary" onclick="editEvent('${event.id}')">
+          <i class="fa-solid fa-edit"></i> Edit
+        </button>
+        <button class="btn btn-sm btn-danger" onclick="deleteEventDirect('${event.id}')">
+          <i class="fa-solid fa-trash"></i> Delete
+        </button>
+      </div>
+    `;
+    
+    eventsList.appendChild(eventItem);
+  });
+}
+
+window.editEvent = function(eventId) {
+  const event = allEvents.find(e => e.id === eventId);
+  
+  if (!event) {
+    showAlert('Event not found', 'error');
+    return;
+  }
+
+  currentEditingId = eventId;
+
+  document.getElementById('eventId').value = eventId;
+  document.getElementById('eventId').disabled = true;
+  document.getElementById('eventTitle').value = event.eventTitle;
+  document.getElementById('eventDescription').value = event.eventDescription;
+  document.getElementById('isLive').checked = event.isLive || false;
+
+  const streamFields = document.getElementById('streamFields');
+  streamFields.innerHTML = '';
+  streamCount = 1;
+
+  if (event.streams && event.streams.length > 0) {
+    event.streams.forEach((stream) => {
+      const streamField = document.createElement('div');
+      streamField.className = 'stream-field';
+      streamField.innerHTML = `
+        <input type="text" class="stream-name" placeholder="Stream Name" value="${stream.name}">
+        <input type="url" class="stream-url" placeholder="Stream URL" value="${stream.url}" required>
+        <button type="button" class="remove-stream-btn" onclick="removeStreamField(this)">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      `;
+      streamFields.appendChild(streamField);
+    });
+  }
+
+  document.getElementById('defaultStream').value = event.defaultStream || 0;
+  document.getElementById('deleteBtn').style.display = 'block';
+
+  document.querySelector('.card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  updateDefaultStreamOptions();
+};
+
+window.deleteEvent = async function() {
+  if (!currentEditingId) return;
+
+  if (!confirm('Delete this event?')) return;
+
+  try {
+    await deleteDoc(doc(db, 'LivePage', currentEditingId));
+    showAlert('Event deleted!', 'success');
+    resetForm();
+  } catch (error) {
+    showAlert('Error: ' + error.message, 'error');
+  }
+};
+
+window.deleteEventDirect = async function(eventId) {
+  if (!confirm('Delete this event?')) return;
+
+  try {
+    await deleteDoc(doc(db, 'LivePage', eventId));
+    showAlert('Event deleted!', 'success');
+  } catch (error) {
+    showAlert('Error: ' + error.message, 'error');
+  }
+};
+
+window.resetForm = function() {
+  document.getElementById('eventForm').reset();
+  document.getElementById('eventId').disabled = false;
+  currentEditingId = null;
+  document.getElementById('deleteBtn').style.display = 'none';
+
+  const streamFields = document.getElementById('streamFields');
+  streamFields.innerHTML = '';
+  streamCount = 1;
+  addStreamField();
+};
+
+function showAlert(message, type) {
+  const alertContainer = document.getElementById('alertContainer');
+  const alert = document.createElement('div');
+  alert.className = `alert alert-${type}`;
+  alert.innerHTML = `
+    <i class="fa-solid fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+    ${message}
+  `;
+
+  alertContainer.innerHTML = '';
+  alertContainer.appendChild(alert);
+
+  setTimeout(() => {
+    alert.style.opacity = '0';
+    alert.style.transition = 'opacity 0.3s';
+    setTimeout(() => alert.remove(), 300);
+  }, 4000);
+}
+
+window.toggleDarkMode = function() {
+  const body = document.body;
+  body.classList.toggle('dark-mode');
+  const isDark = body.classList.contains('dark-mode');
+  localStorage.setItem('adminTheme', isDark ? 'dark' : 'light');
+  document.getElementById('themeText').textContent = isDark ? 'Light' : 'Dark';
+};
+
+function restoreTheme() {
+  const theme = localStorage.getItem('adminTheme');
+  if (theme === 'dark') {
+    document.body.classList.add('dark-mode');
+    document.getElementById('themeText').textContent = 'Light';
+  }
+}
+
+window.addEventListener('beforeunload', () => {
+  if (unsubscribe) {
+    unsubscribe();
+  }
+});
+
+</script>
+
+</body>
+</html>
