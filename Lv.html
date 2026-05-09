@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KNR Sportverse | Live Cricket</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  /* Theme Variables */
+  :root {
+    --bg-color: #f4f7fa;
+    --text-color: #333333;
+    --card-bg: #ffffff;
+    --nav-bg: #1c222e;
+    --brand-color: #5da5e8;
+    --primary-blue: #2a81f3;
+    --border-color: #e0e0e0;
+  }
+
+  body.dark-mode {
+    --bg-color: #0f141a;
+    --text-color: #e4e6eb;
+    --card-bg: #1e2532;
+    --nav-bg: #141922;
+    --border-color: #333b4d;
+  }
+
+  body { 
+    margin: 0; 
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+    background: var(--bg-color);
+    color: var(--text-color);
+    transition: background 0.3s ease, color 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  /* Navbar */
+  .navbar {
+    background: var(--nav-bg);
+    padding: 18px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    color: var(--brand-color);
+    font-weight: 800;
+    font-size: 1.3rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .brand i {
+    font-size: 1.6rem;
+    margin-right: 10px;
+    color: var(--primary-blue);
+  }
+
+  .nav-actions {
+    display: flex;
+    gap: 12px;
+  }
+
+  .icon-btn {
+    background: var(--primary-blue);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  /* Alert Bar */
+  .alert-bar {
+    background: #d32f2f;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 13px;
+  }
+
+  .alert-bar.error {
+    background: #d32f2f;
+  }
+
+  .alert-bar.loading {
+    background: #d32f2f;
+  }
+
+  .alert-bar.success {
+    background: #d32f2f;
+  }
+
+  /* Stream Selection Buttons */
+  .stream-section {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px;
+    flex-wrap: wrap;
+    margin: 10px auto;
+    max-width: 900px;
+  }
+
+  .stream-btn {
+    padding: 8px 20px;
+    border: 1.5px solid var(--primary-blue);
+    border-radius: 8px;
+    background: transparent;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--primary-blue);
+    transition: all 0.2s ease;
+    font-size: 14px;
+  }
+
+  .stream-btn.active {
+    background: var(--primary-blue);
+    color: white;
+  }
+
+  /* Video Player Container */
+  .video-wrapper {
+    position: relative;
+    width: 95%;
+    max-width: 900px;
+    margin: 0 auto;
+    background: #000;
+    aspect-ratio: 16 / 9;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+  }
+
+  #player {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  .video-logo {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  .video-logo img {
+    height: 35px;
+    border-radius: 4px;
+    opacity: 0.85;
+  }
+
+  /* Fullscreen Button Styles */
+  .fullscreen-btn {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    z-index: 10;
+    background: #d32f2f;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  }
+
+  .fullscreen-btn:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
+
+  /* Buffering Loader */
+  .loader {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 60px; 
+    height: 60px;
+    margin-top: -30px; 
+    margin-left: -30px; 
+    border: 3px solid rgba(42, 129, 243, 0.2); 
+    border-top: 3px solid var(--primary-blue); 
+    border-radius: 50%; 
+    animation: spin 0.8s linear infinite;
+    z-index: 99;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* --- CHAT SECTION --- */
+  .chat-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 95%;
+    max-width: 900px;
+    margin: 20px auto 0;
+  }
+
+  .chat-toggle-btn {
+    background: var(--primary-blue);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    transition: transform 0.2s, background 0.2s;
+    box-shadow: 0 4px 12px rgba(42, 129, 243, 0.3);
+  }
+
+  .chat-toggle-btn:hover {
+    background: #1a6cd1;
+    transform: translateY(-2px);
+  }
+
+  .chat-toggle-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #888;
+  }
+
+  #chatWindow {
+    display: none;
+    width: 100%;
+    height: 500px;
+    margin-top: 15px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--card-bg);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  }
+
+  /* Info Card */
+  .card {
+    max-width: 850px;
+    width: 90%;
+    background: var(--card-bg);
+    margin: 20px auto 40px;
+    padding: 20px 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border: 1px solid var(--border-color);
+  }
+
+  .live-tag {
+    background: #ea4335;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: bold;
+    animation: blink 1.5s infinite;
+  }
+
+  .live-tag.offline {
+    background: #666;
+    animation: none;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+
+  .main-content { flex: 1; }
+
+  /* --- FULL FOOTER STYLES --- */
+  .footer {
+    background-color: #161a20;
+    color: #d1d5db;
+    padding: 40px 25px 25px;
+    margin-top: auto;
+    border-top: 1px solid #2d3542;
+  }
+
+  .footer-content {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .footer-brand {
+    display: flex;
+    align-items: center;
+    color: var(--primary-blue);
+    font-weight: 800;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+  }
+
+  .footer-brand i { margin-right: 10px; }
+
+  .footer-desc { margin-top: 10px; font-size: 15px; color: #e4e6eb; }
+
+  .footer-section h4 {
+    color: var(--primary-blue);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .footer-email { color: var(--primary-blue); text-decoration: none; font-weight: 600; }
+
+  .social-icons { display: flex; gap: 12px; }
+
+  .social-icons a {
+    background: #1f2733;
+    color: var(--primary-blue);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    border: 1px solid #2d3542;
+    transition: 0.3s;
+  }
+
+  .social-icons a:hover { background: var(--primary-blue); color: white; }
+
+  .footer-bottom {
+    max-width: 900px;
+    margin: 30px auto 0;
+    padding-top: 20px;
+    border-top: 1px solid #2d3542;
+    text-align: center;
+    font-size: 0.85rem;
+    color: #9ca3af;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <div class="brand">
+    <i class="fa-solid fa-circle-play"></i> KNR SPORTVERSE
+  </div>
+  <div class="nav-actions">
+    <button class="icon-btn" onclick="toggleTheme()"><i id="theme-icon" class="fa-solid fa-moon"></i></button>
+    <button class="icon-btn" onclick="refreshStream()"><i class="fa-solid fa-rotate-right"></i></button>
+  </div>
+</div>
+
+<div class="alert-bar" id="alertBar">Select a server below to start watching the live match</div>
+
+<div class="main-content">
+  <div class="stream-section" id="streamSection">
+    </div>
+
+  <div class="video-wrapper" id="videoContainer">
+    <button class="fullscreen-btn" id="fsBtn" onclick="toggleFullscreen()">
+      <i class="fa-solid fa-expand"></i> <span>FULLSCREEN</span>
+    </button>
+    
+    <div class="video-logo">
+      <img src="https://i.postimg.cc/kGbkMSdP/KNRSPORTVERSE.jpg" alt="Watermark">
+    </div>
+    <div id="player-loader" class="loader"></div>
+    <iframe id="player" 
+      src="" 
+      allow="autoplay; fullscreen; encrypted-media; picture-in-picture;" 
+      allowfullscreen 
+      referrerpolicy="no-referrer">
+    </iframe>
+  </div>
+
+  <div class="chat-container">
+    <button class="chat-toggle-btn" id="chatToggleBtn" onclick="toggleChat()" disabled>
+      <i class="fa-solid fa-comments"></i> JOIN LIVE CHAT
+    </button>
+    <div id="chatWindow">
+      <iframe id="chatFrame" 
+        src="" 
+        style="width:100%; height:100%; border:none;">
+      </iframe>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span id="eventTitleText">Loading Event...</span> <span class="live-tag" id="liveTag"><i class="fa-solid fa-circle" style="font-size: 8px; margin-right: 4px;"></i> LIVE</span></h3>
+    <p id="eventDescription">Please wait while we fetch the details...</p>
+    <p style="margin-top: 10px; font-size: 14px;">If the stream buffers or fails to load, click the <b>Refresh</b> icon or switch to a different server.</p>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-content">
+    <div>
+      <div class="footer-brand"><i class="fa-solid fa-circle-play"></i> KNR SPORTVERSE</div>
+      <p class="footer-desc">Your Ultimate Sports Entertainment Platform</p>
+    </div>
+    <div class="footer-section">
+      <h4><i class="fa-solid fa-envelope"></i> Contact Us</h4>
+      <p>Email: <a href="mailto:knrsportverse@gmail.com" class="footer-email">knrsportverse@gmail.com</a></p>
+    </div>
+    <div class="footer-section">
+      <h4><i class="fa-solid fa-link"></i> Follow Us</h4>
+      <div class="social-icons">
+        <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="#"><i class="fa-brands fa-twitter"></i></a>
+        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+        <a href="#"><i class="fa-brands fa-youtube"></i></a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>KNR SPORTVERSE does not host or claim ownership of any original content. All materials available on this platform are collected from various third-party sources and are provided for informational purposes only.<br>
+    We only display embedded content sourced from different websites and do not store or upload any media on our servers.<br>
+    If you are the rightful owner of any content and believe it has been used inappropriately or violates any policies, please contact us. We will promptly review your request and take appropriate action, including removing the content if necessary.</p>
+  </div>
+</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// ========== FIREBASE CONFIGURATION ==========
+const firebaseConfig = {
+  apiKey: "AIzaSyC6ZqZpIu6HlgjSapyPUL_Wz3aDk-omvJc",
+  authDomain: "knr-sportverse-52e4d.firebaseapp.com",
+  projectId: "knr-sportverse-52e4d",
+  storageBucket: "knr-sportverse-52e4d.firebasestorage.app",
+  messagingSenderId: "116274509659",
+  appId: "1:116274509659:web:1764a978344019f7798c7e",
+  measurementId: "G-BQKJJPLZ5X"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ========== GLOBAL VARIABLES ==========
+let currentEventData = null;
+let currentStreamIndex = 0;
+let unsubscribe = null;
+
+// ========== GET EVENT ID FROM URL ==========
+function getEventIdFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("id");
+}
+
+// ========== LOAD EVENT DATA ==========
+async function loadEvent() {
+  const eventId = getEventIdFromUrl();
+  
+  if (!eventId) {
+    showAlert("Event ID Missing", "error");
+    return;
+  }
+
+  try {
+    const eventRef = doc(db, "LivePage", eventId);
+    
+    unsubscribe = onSnapshot(eventRef, (docSnap) => {
+      if (docSnap.exists()) {
+        currentEventData = docSnap.data();
+        renderEventData();
+        showAlert("Select a server below to start watching the live match", "success");
+      } else {
+        showAlert("Event Not Found", "error");
+        resetUI();
+      }
+    }, (error) => {
+      showAlert("Error loading event: " + error.message, "error");
+      resetUI();
+    });
+  } catch (error) {
+    showAlert("Error: " + error.message, "error");
+  }
+}
+
+// ========== RENDER EVENT DATA ==========
+function renderEventData() {
+  if (!currentEventData) return;
+
+  // Update title specifically to avoid deleting the tag
+  document.getElementById("eventTitleText").textContent = currentEventData.eventTitle;
+  
+  // Update live tag
+  const liveTag = document.getElementById("liveTag");
+  if (currentEventData.isLive) {
+    liveTag.classList.remove("offline");
+    liveTag.innerHTML = '<i class="fa-solid fa-circle" style="font-size: 8px; margin-right: 4px;"></i> LIVE';
+  } else {
+    liveTag.classList.add("offline");
+    liveTag.innerHTML = '<i class="fa-solid fa-circle" style="font-size: 8px; margin-right: 4px;"></i> OFFLINE';
+  }
+
+  // Update description
+  document.getElementById("eventDescription").textContent = currentEventData.eventDescription;
+
+  // Render stream buttons
+  renderStreamButtons();
+
+  // Toggle chat button - Logic updated to match Admin
+  const chatBtn = document.getElementById("chatToggleBtn");
+  if (currentEventData.chatUrl) {
+    chatBtn.disabled = false;
+    document.getElementById("chatFrame").src = currentEventData.chatUrl;
+  } else {
+    chatBtn.disabled = true;
+    document.getElementById("chatWindow").style.display = "none";
+  }
+
+  // Load default stream
+  const defaultIndex = currentEventData.defaultStream || 0;
+  if (!document.getElementById("player").src) {
+    playStream(defaultIndex);
+  }
+}
+
+// ========== RENDER STREAM BUTTONS ==========
+function renderStreamButtons() {
+  const streamSection = document.getElementById("streamSection");
+  streamSection.innerHTML = "";
+
+  if (!currentEventData.streams || currentEventData.streams.length === 0) return;
+
+  currentEventData.streams.forEach((stream, index) => {
+    const btn = document.createElement("button");
+    btn.className = "stream-btn" + (index === currentStreamIndex ? " active" : "");
+    btn.textContent = stream.name;
+    btn.onclick = () => playStream(index, btn);
+    streamSection.appendChild(btn);
+  });
+}
+
+// ========== PLAY STREAM ==========
+function playStream(index, element) {
+  if (!currentEventData || !currentEventData.streams || !currentEventData.streams[index]) return;
+
+  currentStreamIndex = index;
+  document.querySelectorAll('.stream-btn').forEach(btn => btn.classList.remove('active'));
+  
+  if (element) {
+    element.classList.add('active');
+  } else {
+    const btns = document.querySelectorAll('.stream-btn');
+    if(btns[index]) btns[index].classList.add('active');
+  }
+
+  const player = document.getElementById("player");
+  const loader = document.getElementById("player-loader");
+  
+  loader.style.display = "block";
+  player.style.opacity = "0.3";
+  player.src = currentEventData.streams[index].url;
+
+  player.onload = () => {
+    loader.style.display = "none";
+    player.style.opacity = "1";
+  };
+}
+
+// ========== REFRESH STREAM ==========
+function refreshStream() {
+  const player = document.getElementById("player");
+  const currentSrc = player.src;
+  player.src = '';
+  setTimeout(() => { player.src = currentSrc; }, 100);
+}
+
+// ========== TOGGLE FULLSCREEN ==========
+function toggleFullscreen() {
+  const container = document.getElementById("videoContainer");
+  if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+    if (container.requestFullscreen) container.requestFullscreen();
+    else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
+  } else {
+    if (document.exitFullscreen) document.exitFullscreen();
+    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+  }
+}
+
+function handleFsChange() {
+  const btn = document.getElementById('fsBtn');
+  const isFull = document.fullscreenElement || document.webkitFullscreenElement;
+  if (isFull) {
+    btn.innerHTML = '<i class="fa-solid fa-compress"></i>';
+    btn.style.backgroundColor = "black"; 
+  } else {
+    btn.innerHTML = '<i class="fa-solid fa-expand"></i> <span>FULLSCREEN</span>';
+    btn.style.backgroundColor = "#d32f2f"; 
+  }
+}
+document.addEventListener('fullscreenchange', handleFsChange);
+document.addEventListener('webkitfullscreenchange', handleFsChange);
+
+// ========== TOGGLE CHAT ==========
+function toggleChat() {
+  const chatWin = document.getElementById('chatWindow');
+  chatWin.style.display = (chatWin.style.display === 'none' || chatWin.style.display === '') ? 'block' : 'none';
+}
+
+// ========== TOGGLE THEME ==========
+function toggleTheme() {
+  const body = document.body;
+  const icon = document.getElementById("theme-icon");
+  body.classList.toggle("dark-mode");
+  icon.className = body.classList.contains("dark-mode") ? "fa-solid fa-sun" : "fa-solid fa-moon";
+  localStorage.setItem("theme", body.classList.contains("dark-mode") ? "dark" : "light");
+}
+
+// ========== SHOW ALERT ==========
+function showAlert(message, type = "info") {
+  const alertBar = document.getElementById("alertBar");
+  alertBar.textContent = message;
+  alertBar.className = "alert-bar " + type;
+}
+
+// ========== RESET UI ==========
+function resetUI() {
+  document.getElementById("streamSection").innerHTML = "";
+  document.getElementById("player").src = "";
+  document.getElementById("eventTitleText").textContent = "Event Not Found";
+  document.getElementById("eventDescription").textContent = "The event you're looking for doesn't exist.";
+}
+
+// ========== RESTORE THEME ==========
+function restoreTheme() {
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme === "dark") {
+    document.body.classList.add("dark-mode");
+    document.getElementById("theme-icon").className = "fa-solid fa-sun";
+  }
+}
+
+window.addEventListener('load', () => {
+  restoreTheme();
+  loadEvent();
+});
+
+window.toggleTheme = toggleTheme;
+window.refreshStream = refreshStream;
+window.toggleFullscreen = toggleFullscreen;
+window.toggleChat = toggleChat;
+window.playStream = playStream;
+</script>
+</body>
+</html>
